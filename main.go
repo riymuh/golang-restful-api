@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,6 +14,7 @@ func main() {
 	router.GET("/", rootHandler)
 	router.GET("/user/:id", getUserHandler)
 	router.GET("/query", getQueryHandler)
+	router.POST("user/create", postUserHandler)
 
 	router.GET("/about", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -38,8 +40,32 @@ func getUserHandler(c *gin.Context) {
 }
 
 func getQueryHandler(c *gin.Context) {
-	id := c.Query("title")
+	title := c.Query("title")
+	genre := c.Query("genre")
 	c.JSON(http.StatusOK, gin.H{
-		"title_test": id,
+		"title": title,
+		"genre": genre,
+	})
+}
+
+type UserRequest struct {
+	name  string
+	email string
+	//full_name string
+}
+
+func postUserHandler(c *gin.Context) {
+	var userRequest UserRequest
+
+	err := c.ShouldBindJSON(&userRequest)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"name":  userRequest.name,
+		"email": userRequest.email,
+		//"full_name": userRequest.full_name,
 	})
 }
