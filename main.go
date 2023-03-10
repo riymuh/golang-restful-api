@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -49,9 +49,9 @@ func getQueryHandler(c *gin.Context) {
 }
 
 type UserRequest struct {
-	name  string
-	email string
-	//full_name string
+	Name       string `json:"name" binding:"required"`
+	Email      string
+	StatusName string `json:"status_name"`
 }
 
 func postUserHandler(c *gin.Context) {
@@ -60,12 +60,15 @@ func postUserHandler(c *gin.Context) {
 	err := c.ShouldBindJSON(&userRequest)
 
 	if err != nil {
-		log.Fatal(err)
+		//log.Fatal(err)
+		fmt.Println(err)
+		c.JSON(http.StatusBadRequest, err)
+		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"name":  userRequest.name,
-		"email": userRequest.email,
-		//"full_name": userRequest.full_name,
+	c.JSON(http.StatusCreated, gin.H{
+		"name":        userRequest.Name,
+		"email":       userRequest.Email,
+		"status_name": userRequest.StatusName,
 	})
 }
