@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 func main() {
@@ -51,7 +53,8 @@ func getQueryHandler(c *gin.Context) {
 type UserRequest struct {
 	Name       string `json:"name" binding:"required"`
 	Email      string
-	StatusName string `json:"status_name"`
+	StatusName string      `json:"status_name"`
+	Phone      json.Number `json:"phone" binding:"required,number"`
 }
 
 func postUserHandler(c *gin.Context) {
@@ -61,14 +64,30 @@ func postUserHandler(c *gin.Context) {
 
 	if err != nil {
 		//log.Fatal(err)
-		fmt.Println(err)
-		c.JSON(http.StatusBadRequest, err)
+		// for _, e := range err.(validator.ValidationErrors) {
+		// 	errorMessage := fmt.Sprintf("Error on field %s: %v", e.Field(), e.ActualTag())
+		// 	c.JSON(http.StatusBadRequest, errorMessage)
+		// 	return
+		// }
+
+		errorMessages := []string{}
+		for _, e := range err.(validator.ValidationErrors) {
+			errorMessage := fmt.Sprintf("Error on field %s: %v", e.Field(), e.ActualTag())
+			errorMessages = append(errorMessages, errorMessage)
+		}
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors": errorMessages,
+		})
 		return
+		// fmt.Println(err)
+		// c.JSON(http.StatusBadRequest, err)
+		// return
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
 		"name":        userRequest.Name,
 		"email":       userRequest.Email,
 		"status_name": userRequest.StatusName,
+		"phone":       userRequest.Phone,
 	})
 }
