@@ -26,9 +26,9 @@ func main() {
 
 	v1 := router.Group("/v1")
 
-	v1.GET("/", handler.RootHandler)
+	v1.GET("/user", handler.GetUserListHandler)
 	v1.GET("/user/:id", handler.GetUserHandler)
-	v1.GET("/query", handler.GetQueryHandler)
+	v1.GET("/user/query", handler.GetUserQueryHandler)
 	v1.POST("user/create", handler.PostUserHandler)
 
 	router.GET("/about", func(c *gin.Context) {

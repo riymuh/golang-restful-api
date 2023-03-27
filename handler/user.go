@@ -10,7 +10,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func RootHandler(c *gin.Context) {
+func GetUserListHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Hello World! ini funciton",
 	})
@@ -23,7 +23,7 @@ func GetUserHandler(c *gin.Context) {
 	})
 }
 
-func GetQueryHandler(c *gin.Context) {
+func GetUserQueryHandler(c *gin.Context) {
 	title := c.Query("title")
 	genre := c.Query("genre")
 	c.JSON(http.StatusOK, gin.H{
